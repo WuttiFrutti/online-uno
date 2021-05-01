@@ -1,6 +1,9 @@
 {
     "scripts": {
-        "install": "npm --prefix react-uno run build",
+        "install": "npm --prefix react-uno i && npm --prefix react-uno run build",
         "start": "node uno-server/server.js"
+    },
+    "engines": {
+        "node": "14.x"
     }
 }
