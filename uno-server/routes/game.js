@@ -1,6 +1,7 @@
 const express = require('express');
 const { CardTypes } = require('../cards');
 const router = express.Router();
+const { v4: uuid } = require('uuid');
 
 const Games = require('../classes/Games');
 const Player = require('../classes/Player');
@@ -38,7 +39,18 @@ router.get('', (req, res) => {
 
 router.post('', (req, res) => {
     if (!req.game) {
-        const { owner: userToken, token } = Games.new(new Player(req.body.username), req.body.settings || {}, req.body.settings?.roomId);
+        if (req.body.settings?.roomId) {
+            let game = null;
+            try {
+                game = Games.get(req.body.settings.roomId)
+            } catch (err) { }
+            if (game && game.state === GameStates.ENDED) {
+                Games.remove(game.token);
+            } else if (game) {
+                throw new HttpError("Game already exists", 401);
+            }
+        }
+        const { owner: userToken, token } = Games.new(new Player(req.body.username), req.body.settings || {}, req.body.settings?.roomId || uuid().slice(-6));
         res.cookie("token", userToken);
         res.send({ token: token, userToken: userToken });
     } else {

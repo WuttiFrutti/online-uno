@@ -40,6 +40,10 @@ class Games {
         return this._games.findIndex(game => game.token === gameToken);
     }
 
+    remove(gameToken){
+        this._games = this._games.filter(g => g.token !== gameToken);
+    }
+
     end(gameToken){
         const game = this.get(gameToken);
         game.state = GameStates.ENDED;

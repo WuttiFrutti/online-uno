@@ -32,10 +32,11 @@ const CreateGameModal = () => {
 
     const start = (e) => {
         e.preventDefault();
-        axios.post("game", { username: fields.username, settings: {deckRules: fields.deckRules, roomId: fields.roomId || null} })
+        if(fields.username === "") return setInvalid({username:true});
+        axios.post("game", { username: fields.username, settings: {deckRules: fields.deckRules, roomId: fields.roomId === "" ? null : fields.roomId} })
             .then(res => {
                 history.push("/game")
-            });
+            }).catch(defaultCatch);
         hideModal();
     }
 
