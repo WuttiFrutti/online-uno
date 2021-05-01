@@ -1,0 +1,6 @@
+{
+    "scripts": {
+        "install": "npm --prefix react-uno run build",
+        "start": "node uno-server/server.js"
+    }
+}
