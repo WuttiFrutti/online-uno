@@ -1,0 +1,20 @@
+{
+    "workspaces": [
+        "react-uno",
+        "uno-server"
+    ],
+    "scripts": {
+        "install": "npm --prefix react-uno run build",
+        "start": "node uno-server/server.js"
+    },
+    "engines": {
+        "node": "15.x"
+    },
+    "name": "online-uno-main",
+    "version": "1.0.0",
+    "main": "uno-server/server.js",
+    "repository": "https://github.com/WuttiFrutti/online-uno.git",
+    "author": "WuttiFrutti",
+    "license": "MIT",
+    "private": true
+}
