@@ -28,7 +28,7 @@ const GamePage = () => {
     const {
         sendJsonMessage: sendMessage,
         readyState,
-    } = useWebSocket(process.env.REACT_APP_WS_BACKEND_URL, {
+    } = useWebSocket((process.env.REACT_APP_WS_BACKEND_SSL ? "wss://" : "ws://") + window.location.hostname + ":" + window.location.port + process.env.REACT_APP_WS_BACKEND_PATH, {
         onMessage: websocketReducer,
         shouldReconnect: (closeEvent) => {
             if (closeEvent.reason === "NOT_LOGGED_IN") {

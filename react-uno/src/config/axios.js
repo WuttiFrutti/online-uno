@@ -1,8 +1,10 @@
 import axios from "axios";
 import { addToast } from "../toasts";
 
+const ssl = process.env.REACT_APP_HTTP_BACKEND_SSL == "true";
+
 let config = {
-  baseURL: process.env.REACT_APP_HTTP_BACKEND_URL,
+  baseURL: (ssl ? "https://" : "http://") + window.location.hostname + ":" + window.location.port + process.env.REACT_APP_HTTP_BACKEND_PATH,
   timeout: 60 * 1000, // Timeout
   withCredentials: true, // Check cross-site Access-Control
 };
