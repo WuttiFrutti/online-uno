@@ -13,8 +13,8 @@ class Games {
         return Games.instance;
     }
 
-    new(owner, token, players = []) {
-        this._games.push(new Game(owner.token, token, [owner, ...players]));
+    new(owner, settings, token, players = []) {
+        this._games.push(new Game(owner.token, token, [owner, ...players], settings));
         return this._games[this._games.length - 1];
     }
 

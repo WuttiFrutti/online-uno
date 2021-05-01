@@ -11,6 +11,7 @@ import CardDeck from './../components/CardDeck';
 import DeckCard from '../components/DeckCard';
 import LastCard from '../components/LastCard';
 import CurrentCard from '../components/CurrentCard';
+import { wsURL } from '../config/defaults';
 
 
 
@@ -28,7 +29,7 @@ const GamePage = () => {
     const {
         sendJsonMessage: sendMessage,
         readyState,
-    } = useWebSocket((process.env.REACT_APP_WS_BACKEND_SSL ? "wss://" : "ws://") + window.location.hostname + ":" + window.location.port + process.env.REACT_APP_WS_BACKEND_PATH, {
+    } = useWebSocket(wsURL, {
         onMessage: websocketReducer,
         shouldReconnect: (closeEvent) => {
             if (closeEvent.reason === "NOT_LOGGED_IN") {

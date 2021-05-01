@@ -1,5 +1,5 @@
 const express = require('express');
-const { CardTypes, isPlayable } = require('../cards');
+const { CardTypes } = require('../cards');
 const router = express.Router();
 
 const Games = require('../classes/Games');
@@ -38,7 +38,7 @@ router.get('', (req, res) => {
 
 router.post('', (req, res) => {
     if (!req.game) {
-        const { owner: userToken, token } = Games.new(new Player(req.body.username));
+        const { owner: userToken, token } = Games.new(new Player(req.body.username), req.body.settings || {}, req.body.settings?.roomId);
         res.cookie("token", userToken);
         res.send({ token: token, userToken: userToken });
     } else {
@@ -81,7 +81,7 @@ router.put("/card", isCurrentPlayer, (req, res) => {
 
 router.post("/card", isCurrentPlayer, (req, res) => {
     const player = req.game.getPlayer(req.cookies.token);
-    if (player.hasDrawn && isPlayable(player.cards[player.cards.length - 1], req.game.deck.currentCard)) {
+    if (player.hasDrawn && req.game.settings.isPlayable(player.cards[player.cards.length - 1], req.game.deck.currentCard)) {
         throw new HttpError("Play your playable card", 400)
     } else {
         let cards = req.game.takeFromDeck(req.game.tally || 1);

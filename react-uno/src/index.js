@@ -13,7 +13,7 @@ Number.prototype.clamp = function (min, max) {
   return Math.min(Math.max(this, min), max);
 };
 
-String.prototype.capitalize = function() {
+String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.slice(1)
 }
 
@@ -21,9 +21,9 @@ ReactDOM.render(
   <>
     <Router>
       <Routes />
+      <ToastsElement />
+      <ModalElement />
     </Router>
-    <ToastsElement />
-    <ModalElement />
   </>,
   document.getElementById('root')
 );

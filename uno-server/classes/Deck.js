@@ -1,8 +1,8 @@
-const { createDeck, CardTypes, CardColours } = require("../cards");
+const { CardTypes, CardColours } = require("../cards");
 
 class Deck {
-    constructor() {
-        this.deck = createDeck();
+    constructor(deck) {
+        this.deck = deck;
         this.stack = [];
         this.shuffle();
     }

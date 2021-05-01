@@ -13,10 +13,10 @@ const { getGame } = require("./middleware");
 const app = express();
 
 
-// app.use(cors( {
-//     origin: 'http://localhost:3001',
-//     credentials: true,
-// }))
+app.use(cors( {
+    origin: 'http://localhost:3000',
+    credentials: true,
+}))
 app.use(json())
 app.use(urlencoded({
     extended: true
@@ -54,7 +54,7 @@ app.use("/game",express.static(path.join(__dirname, '/../react-uno/build')));
 
 
 
-const server = app.listen(process.env.PORT || 3000, () => {
+const server = app.listen(process.env.PORT || 8080, () => {
 	const host = server.address().address
 	const port = server.address().port
 	console.log(`Server started on: ${host}:${port}`)

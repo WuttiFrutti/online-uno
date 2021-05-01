@@ -5,11 +5,12 @@ import { useState, useEffect } from 'react';
 import axios, { defaultCatch, silent } from '../config/axios';
 import { useHistory } from "react-router-dom";
 import useCookie from 'react-use-cookie';
+import { addModal } from '../modals';
+import CreateGameModal from './../components/CreateGameModal';
 
 const LoginPage = () => {
     const [username, setUsername] = useState("");
     const [roomId, setRoomId] = useState("");
-    const [valid, setValid] = useState(true);
     const [hasGame, setHasGame] = useState(false)
     const [userToken, setUserToken] = useCookie("token", false);
     const history = useHistory();
@@ -33,11 +34,11 @@ const LoginPage = () => {
     };
 
     const createNew = () => {
-        if (!username) return setValid(false);
-        axios.post("game", { username: username })
-            .then(res => {
-                history.push("/game")
-            }).catch(defaultCatch);
+        // if (!username) return setValid(false);
+        addModal({
+            title: "Create Game",
+            body: <CreateGameModal />,
+        });
     }
 
     useEffect(() => {
@@ -55,7 +56,7 @@ const LoginPage = () => {
             <Form onSubmit={submit} className="m-auto" style={{ maxWidth: "550px" }}>
                 <Form.Group controlId="form-username">
                     <Form.Label>Name</Form.Label>
-                    <Form.Control isInvalid={!valid && !username} value={username} required onChange={e => setUsername(e.target.value)} type="text" placeholder="Enter username" />
+                    <Form.Control value={username} required onChange={e => setUsername(e.target.value)} type="text" placeholder="Enter username" />
                     <Form.Text className="text-muted">
                         This is the username that will be used during the game
                     </Form.Text>

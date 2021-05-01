@@ -1,20 +1,21 @@
 const { v4: uuid } = require('uuid');
-const { CardTypes, isPlayable, isJumpable } = require('../cards');
+const Settings = require("./Settings")
+const { CardTypes } = require('../cards');
 const { GameStates } = require('../enums');
 const { HttpError } = require('../errors');
 const Deck = require('./Deck');
 
 class Game {
-    constructor(owner, token = uuid(), players = [], settings) {
+    constructor(owner, token = uuid(), players = [], settings = {}) {
         this.token = token;
         this.players = [];
         this.owner = owner;
         this.state = GameStates.JOINING;
         this.currentPlayer = 1;
-        this.deck = new Deck();
         this.directionIsFlipped = false;
         this.tally = 0;
-        this.settings = settings;
+        this.settings = new Settings(settings.cardRules, settings.deckRules, settings.drawingRules);
+        this.deck = new Deck(this.settings.createDeck());
         players.forEach(player => this.addPlayer(player));
         this.playerRanks = [];
         this.lastPlayer = 1;
@@ -41,10 +42,10 @@ class Game {
             tally: this.tally,
             you: {
                 owner: this.owner === playerToken, ...player, cards: player.cards.map((card, id) => ({
-                    playable: (isPlayable(card, this.deck.currentCard, this.tally) &&
+                    playable: (this.settings.isPlayable(card, this.deck.currentCard, this.tally) &&
                         (!player.hasDrawn || player.cards.length - 1 === id) &&
                         this.currentPlayer === player.id) ||
-                        (isJumpable(card, this.deck.currentCard) && this.currentPlayer !== player.id),
+                        (this.settings.isJumpable(card, this.deck.currentCard) && this.currentPlayer !== player.id),
                     ...card
                 })),
             },
@@ -106,7 +107,7 @@ class Game {
     }
 
     jumpCard(playerId, card) {
-        if (isJumpable(card, this.deck.currentCard)) {
+        if (this.settings.isJumpable(card, this.deck.currentCard)) {
             this.currentPlayer = playerId;
             console.log("Next card jumped")
             this.playCard(card);
@@ -119,7 +120,7 @@ class Game {
     playCard(card) {
         const player = this.getPlayerById();
         this.players.forEach(p => { p.hasDrawn = false; });
-        if (isPlayable(card, this.deck.currentCard, this.tally) && (!player.hasDrawn || player.cards[player.cards.length - 1].id < card.id)) {
+        if (this.settings.isPlayable(card, this.deck.currentCard, this.tally) && (!player.hasDrawn || player.cards[player.cards.length - 1].id < card.id)) {
             let advance = 1;
             switch (card.type) {
                 case CardTypes.REVERSE: {
