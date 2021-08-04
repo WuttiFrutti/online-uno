@@ -7,6 +7,7 @@ body {
 
 
 .playing-card {
+    @extend .disable-select;
     width: 10rem;
     height: 20rem;
     transition: .1s;
@@ -26,6 +27,10 @@ body {
     }
 }
 
+.switch.btn-xs span{
+    line-height: .5;
+}
+
 .card-deck {
     position: absolute;
     left: 1rem;
@@ -35,8 +40,14 @@ body {
 
     .card {
         @extend .playing-card;
+        @extend .disable-select;
 
         .play-card-button {
+            transition: 0s;
+            display: none;
+        }
+
+        .keep-card-button {
             transition: 0s;
             display: none;
         }
@@ -52,11 +63,20 @@ body {
                 transform: translate(-50%);
                 display: block;
             }
+
+            .keep-card-button {
+                position: absolute;
+                left: 50%;
+                bottom: 10%;
+                transform: translate(-50%);
+                display: block;
+            }
         }
     }
 }
 
 .current-card {
+    @extend .disable-select;
     @extend .playing-card;
     transition: .5s;
     left: 50%;
@@ -64,9 +84,16 @@ body {
     transform: translate(-50%, -50%);
 }
 
-
+.disable-select {
+    user-select: none; /* supported by Chrome and Opera */
+   -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+   -moz-user-select: none; /* Firefox */
+   -ms-user-select: none; /* Internet Explorer/Edge */
+}
 
 .deck-card {
+    @extend .disable-select;
     z-index: 10;
     position: absolute;
     left: calc(50vw + 11rem);
@@ -78,6 +105,7 @@ body {
     .draw-button{
         transform: translate(-50%, 200%);
     }
+ 
 }
 
 .card-move{

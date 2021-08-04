@@ -28,13 +28,15 @@ export const websocketReducer = async ({ data }) => {
         }
             break;
         case "CARD_DRAWN":
+        case "CARD_KEPT":
         case "CARD_PLAYED": {
             const { data } = await axios.get("game");
             GameStore.update(s => {
                 s.lastCard = s.currentCard;
                 s.lastPlayer = data.lastPlayer;
                 s.currentCard = data.currentCard; s.currentPlayer = data.currentPlayer; s.players = data.players; s.tally = data.tally;
-                s.you.hasDrawn = data.you.hasDrawn
+                s.you.hasDrawn = data.you.hasDrawn;
+                s.forcedDraw = data.forcedDraw;
                 if (s.you.cards.length !== data.you.cards.length || s.currentPlayer === s.you.id) {
                 }
                 s.you.cards = s.you.cards.map(c => ({...c, playable:!data.you.hasDrawn}));
@@ -85,6 +87,7 @@ export const refreshGameState = async () => {
             s.lastPlayer = null;
             s.playerRanks = null;
             s.tally = data.tally;
+            s.forcedDraw = data.forcedDraw;
         });
     } catch (err) { }
 }
@@ -92,7 +95,6 @@ export const refreshGameState = async () => {
 export const setSorted = (sort) => {
     GameStore.update(s => {
         s.you.cards = getSorted(sort, [...s.you.cards])
-        console.log(s.you.cards);
     });
 }
 

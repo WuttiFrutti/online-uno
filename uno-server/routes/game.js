@@ -108,6 +108,15 @@ router.post("/card", isCurrentPlayer, (req, res) => {
     }
 });
 
+router.post("/keep", isCurrentPlayer, (req,res) => {
+    const player = req.game.getPlayer(req.cookies.token);
+    if(player.hasDrawn && !req.game.settings.playRules.forcedDraw){
+        req.game.advancePlayer();
+        req.game.send({ action: "CARD_KEPT" });
+        res.send({ message: "Kept: card" });
+    }
+})
+
 
 
 

@@ -1,22 +1,42 @@
 import { GameStore } from './../gameState';
 import UnoCard from './UnoCard';
 import { useEffect } from 'react';
+import styled, { keyframes } from "styled-components"
 
-const CurrentCard = () => {
-    const {currentCard, lastPlayer, players} = GameStore.useState(s => s);
+const PositionedUnoCard = styled(UnoCard)`
+    animation: ${props => props.animation} ${props => props.ms}ms;
+    position: fixed !important;
+    margin: 0 !important;
+`
+
+const moveAnimation = (playerIndex) =>  keyframes`
+    from {
+        top: 15rem;
+        left: calc(6rem + ${playerIndex * 5}rem)
+    }
+
+    to {
+        left: calc(50vw + 11rem) !important;
+        top: 50vh;
+        transform: translate(-50%, -50%);
+    }
+`
+
+const CurrentCard = ({duration = 500}) => {
+    const { currentCard, lastPlayer, players } = GameStore.useState(s => s);
     const isNew = currentCard?.isNew || false;
+
 
     useEffect(() => {
         if (isNew) {
             setTimeout(() => GameStore.update(s => {
                 s.currentCard.isNew = false;
-            }), 10)
+            }), duration)
         }
-    }, [isNew]);
+    }, [isNew, duration]);
 
     const getPlayerIndex = players.findIndex(player => player.id === lastPlayer);
-
-    return currentCard ? <UnoCard className={isNew ? "current-card card-current-move " : "current-card"} style={isNew ? {left:`calc(1rem + ${getPlayerIndex * 10}rem)`} : null} {...currentCard} /> : null
+    return currentCard ? <PositionedUnoCard className="current-card" ms={duration} animation={isNew && getPlayerIndex !== -1 ? moveAnimation(getPlayerIndex) : null} {...currentCard} /> : null
 }
 
 export default CurrentCard;

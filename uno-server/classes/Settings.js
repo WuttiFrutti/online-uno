@@ -2,8 +2,8 @@ const { CardTypes:Types, CardColours:Colours } = require('../cards');
 
 
 class Settings {
-    constructor(cardRules = {}, deckRules = {}, drawingRules = {}){
-        this.cardRules = cardRules;
+    constructor(playRules = {}, deckRules = {}){
+        this.playRules = playRules;
         this.deckRules = deckRules;
     }
 
@@ -45,15 +45,16 @@ class Settings {
         (Number.isFinite(playingCard.number) && playingCard.number === currentCard.number) ||
         (currentCard.type !== Types.PLUS2 && currentCard.type !== Types.PLUS4 && playingCard.colour && playingCard.colour === currentCard.colour) ||
         (playingCard.colour === Colours.UNIVERSAL && currentCard.type !== Types.PLUS4 && currentCard.type !== Types.PLUS2) ||
-        (playingCard.type === Types.PLUS4 && currentCard.type === Types.PLUS2) ||
+        (this.playRules["4on2"] && playingCard.type === Types.PLUS4 && currentCard.type === Types.PLUS2) ||
         (playingCard.type !== Types.STANDARD && playingCard.type === currentCard.type) ||
         (currentCard.type === Types.PLUS4 && !tally) ||
-        (currentCard.type === Types.PLUS2 && (currentCard.colour === playingCard.colour || playingCard.colour === Colours.UNIVERSAL) && !tally);
+        (currentCard.type === Types.PLUS2 && (currentCard.colour === playingCard.colour || playingCard.colour === Colours.UNIVERSAL) && !tally) ||
+        (this.playRules["2on4"] && playingCard.type === Types.PLUS2 && currentCard.type === Types.PLUS4);
     }
         
 
     isJumpable(playingCard, currentCard){
-        return (currentCard && currentCard.type === Types.STANDARD && playingCard && playingCard.type === Types.STANDARD) &&
+        return this.playRules.jump && (currentCard && currentCard.type === Types.STANDARD && playingCard && playingCard.type === Types.STANDARD) &&
         (currentCard.colour === playingCard.colour) &&
         (currentCard.number === playingCard.number);
     }

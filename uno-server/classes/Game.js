@@ -14,7 +14,7 @@ class Game {
         this.currentPlayer = 1;
         this.directionIsFlipped = false;
         this.tally = 0;
-        this.settings = new Settings(settings.cardRules, settings.deckRules, settings.drawingRules);
+        this.settings = new Settings(settings.playRules, settings.deckRules);
         this.deck = new Deck(this.settings.createDeck());
         players.forEach(player => this.addPlayer(player));
         this.playerRanks = [];
@@ -41,7 +41,9 @@ class Game {
             players: this.players.filter(player => player.token !== playerToken).map(player => player.info),
             tally: this.tally,
             you: {
-                owner: this.owner === playerToken, ...player, cards: player.cards.map((card, id) => ({
+                owner: this.owner === playerToken,
+                ...player,
+                cards: player.cards.map((card, id) => ({
                     playable: (this.settings.isPlayable(card, this.deck.currentCard, this.tally) &&
                         (!player.hasDrawn || player.cards.length - 1 === id) &&
                         this.currentPlayer === player.id) ||
@@ -52,6 +54,7 @@ class Game {
             playerRanks: this.playerRanks,
             lastPlayer: this.lastPlayer,
             flipped: this.directionIsFlipped,
+            forcedDraw: this.settings.playRules.forcedDraw
         }) : ({
             currentPlayer: this.currentPlayer,
             currentCard: this.deck.currentCard,
@@ -119,7 +122,6 @@ class Game {
 
     playCard(card) {
         const player = this.getPlayerById();
-        this.players.forEach(p => { p.hasDrawn = false; });
         if (this.settings.isPlayable(card, this.deck.currentCard, this.tally) && (!player.hasDrawn || player.cards[player.cards.length - 1].id < card.id)) {
             let advance = 1;
             switch (card.type) {
@@ -147,7 +149,6 @@ class Game {
             }
             this.deck.stack.push(card);
             this.checkGameState();
-            this.lastPlayer = this.currentPlayer;
             this.advancePlayer(advance);
             console.log("PLAYED:", card);
             this.send({ action: "CARD_PLAYED" });
@@ -158,6 +159,8 @@ class Game {
     }
 
     advancePlayer = (amount = 1) => {
+        this.lastPlayer = this.currentPlayer;
+        this.players.forEach(p => { p.hasDrawn = false; });
         if(!this.activePlayers.length) return console.log("No more players");
         this.currentPlayer = this.getNextPlayer(amount);
     }

@@ -1,14 +1,22 @@
 import Button from 'react-bootstrap/Button'
 import { GameStore } from './../gameState';
-import axios from './../config/axios';
+import axios, { defaultCatch } from './../config/axios';
 import { addModal, hideModal } from './../modals';
 import { cardColours } from './../enums';
 import { useEffect } from 'react';
 import UnoCard from './UnoCard';
+import styled, { keyframes } from "styled-components"
+
 
 const PlayingCard = ({cardId, addPlay, playable, className, isNew, ...card }) => {
-    const {  you: { cards } } = GameStore.useState(s => s);
+    const {currentPlayer,  you: { cards, id, hasDrawn }, forcedDraw } = GameStore.useState(s => s);
+    const isInTurn = currentPlayer === id;
     const isPlayable = addPlay && playable;
+    const duration = 500;
+
+    const keep = () => {
+        axios.post("game/keep").catch(defaultCatch);
+    }
 
     const playCard = async (cardIndex, colour) => {
         if (!colour && cards.find(card => card.id === cardIndex).type === "SWITCH") {
@@ -30,15 +38,35 @@ const PlayingCard = ({cardId, addPlay, playable, className, isNew, ...card }) =>
         if (isNew === true && cardId) {
             setTimeout(() => GameStore.update(s => {
                 s.you.cards.find(card => card.id === cardId).isNew = false;
-            }), 10)
+            }), duration)
         }
     }, [cardId, isNew])
 
-    return (<UnoCard {...card} className={className ? className + " "  : "" +  (isNew === true ? "card-move" : "")} >
+    return (<PositionedUnoCard {...card} className={className} >
         {isPlayable ? <Button onClick={() => playCard(cardId)} className="play-card-button" variant="light">
             Play
         </Button> : null}
-    </UnoCard>)
+        {isInTurn && hasDrawn && cardId === cards[cards.length - 1].id && !forcedDraw ? <Button onClick={keep} className="keep-card-button" variant="light">Keep</Button> : null}
+    </PositionedUnoCard>)
 }
 
 export default PlayingCard;
+
+
+const PositionedUnoCard = styled(UnoCard)`
+    animation: ${props => props.animation} ${props => props.ms}ms;
+    margin: 0 !important;
+`
+
+const moveAnimation = (playerIndex) =>  keyframes`
+    from {
+        top: 15rem;
+        left: calc(6rem + ${playerIndex * 5}rem)
+    }
+
+    to {
+        left: calc(50vw + 11rem) !important;
+        top: 50vh;
+        transform: translate(-50%, -50%);
+    }
+`
