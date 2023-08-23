@@ -14,7 +14,8 @@
     "react-use-cookie": "^1.2.1",
     "react-use-websocket": "^2.5.0",
     "sass": "^1.32.12",
-    "styled-components": "^5.3.0"
+    "styled-components": "^5.3.0",
+    "bootstrap-switch-button-react": "^1.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
